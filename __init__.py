@@ -140,6 +140,29 @@ class VIEW_3D_PT_tweenMachine(bpy.types.Panel):
         row.operator(ANIM_OT_tween_90.bl_idname)
 
 
+class VIEW_3D_PT_tweenMachineSettings(bpy.types.Panel):
+    """Creates a SubPanel for advanced properties of tweenMachine"""
+    bl_category = "Tween Machine"
+    bl_label = "Advanced Settings"
+    bl_parent_id = "VIEW_3D_PT_tweenMachine"
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+
+    def draw(self, context):
+
+        layout = self.layout
+
+        # Add the property slider Tween Mix
+        row = layout.row()
+        row.prop(context.scene, "tween_location")
+        row = layout.row()
+        row.prop(context.scene, "tween_rotation")
+        row = layout.row()
+        row.prop(context.scene, "tween_scale")
+        row = layout.row()
+        row.prop(context.scene, "tween_custom")
+
+
 def add_tween_menu_draw(self, context):
     """Creates a Menu inside Object > Animation"""
     self.layout.separator()
@@ -175,6 +198,7 @@ def register():
 
     # Register Panel
     bpy.utils.register_class(VIEW_3D_PT_tweenMachine)
+    bpy.utils.register_class(VIEW_3D_PT_tweenMachineSettings)
 
     # Register Menu
     bpy.types.VIEW3D_MT_object_animation.append(add_tween_menu_draw)
@@ -190,6 +214,7 @@ def unregister():
 
     # Unregister Panel
     bpy.utils.unregister_class(VIEW_3D_PT_tweenMachine)
+    bpy.utils.unregister_class(VIEW_3D_PT_tweenMachineSettings)
 
     # Unregister Menu
     bpy.types.VIEW3D_MT_object_animation.remove(add_tween_menu_draw)

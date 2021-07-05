@@ -11,6 +11,8 @@ import bpy
 # Globals
 # --------------------------------------------------------------
 
+ROTATION_LIST = ["rotation", "rotation_euler", "rotation_quaternion"]
+
 # --------------------------------------------------------------
 # Functions
 # --------------------------------------------------------------
@@ -48,15 +50,14 @@ def setValue(obj, path, value):
         setattr(prop, path_attr, value)
 
 
-def getClosestKeyFrame(obj, current_frame, list_bones=[]):
-    dict_keyframes = {}
+def getClosestKeyFrame(obj, current_frame, list_bones=""):
 
-    # pprint(list_bones)
+    dict_keyframes = {}
 
     try:
         fcurves = obj.animation_data.action.fcurves
     except:
-        return False
+        return dict_keyframes
 
     for curve in fcurves:
 
@@ -134,13 +135,35 @@ def getClosestKeyFrame(obj, current_frame, list_bones=[]):
 
 
 def insertKeyframe(dict_objects, mix):
-    # pprint(dict_objects)
+
+    t_location = bpy.context.scene.tween_location
+    t_rotation = bpy.context.scene.tween_rotation
+    t_scale = bpy.context.scene.tween_scale
+    t_custom = bpy.context.scene.tween_custom
 
     for obj in dict_objects:
 
         for data in dict_objects[obj]:
 
             list_data = []
+
+            prop, data_path = resolveProperty(obj, data)
+
+            if data_path == "location":
+                if not t_location:
+                    continue
+
+            elif data_path in ROTATION_LIST:
+                if not t_rotation:
+                    continue
+
+            elif data_path == "scale":
+                if not t_scale:
+                    continue
+
+            else:
+                if not t_custom:
+                    continue
 
             for index in dict_objects[obj][data]:
                 # Calculate the new value
@@ -182,8 +205,14 @@ def tween(scene, context, mix):
         objects = list(context.selected_pose_bones)
 
     elif context.mode == "OBJECT":
+        objects = []
         # List selected objects
-        objects = list(context.selected_objects)
+        selected_objects = list(context.selected_objects)
+        for obj in selected_objects:
+            # Get subtype object(Mesh, Light, Camera, etc...)
+            obj_subtype = obj.data
+            objects.append(obj)
+            objects.append(obj_subtype)
 
     if not objects:
         return None
@@ -191,7 +220,7 @@ def tween(scene, context, mix):
     dict_objects = {}
 
     for obj in objects:
-
+        # print(obj)
         # print(obj.name)
 
         # Find the closest keyframes (one before and one after)
@@ -204,10 +233,10 @@ def tween(scene, context, mix):
         else:
             dict_objects[obj] = getClosestKeyFrame(obj, current_frame)
 
-        # Insert a keyframe at the current frame
-        # based on a mix(%) of the previous and the next keyframe value
+    # Insert a keyframe at the current frame
+    # based on a mix(%) of the previous and the next keyframe value
 
-        insertKeyframe(dict_objects, mix)
+    insertKeyframe(dict_objects, mix)
 
     return None
 
@@ -215,9 +244,22 @@ def tween(scene, context, mix):
 # --------------------------------------------------------------
 # Properties
 # --------------------------------------------------------------
-
+# Mix Property
 bpy.types.Scene.tween_mix = bpy.props.FloatProperty(name="Tween Mix",
                                                     min=0,
                                                     default=0.5,
                                                     max=1,
                                                     update=tweenMachine)
+
+# Enables Properties
+bpy.types.Scene.tween_location = bpy.props.BoolProperty(name="Tween Location",
+                                                        default=True)
+
+bpy.types.Scene.tween_rotation = bpy.props.BoolProperty(name="Tween Rotation",
+                                                        default=True)
+
+bpy.types.Scene.tween_scale = bpy.props.BoolProperty(name="Tween Scale",
+                                                     default=True)
+
+bpy.types.Scene.tween_custom = bpy.props.BoolProperty(name="Tween Custom",
+                                                      default=True)

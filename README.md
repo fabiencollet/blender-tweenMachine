@@ -3,7 +3,15 @@
  inspired by the original tweenMachine 
  from [Justin Barrett](http://www.justinsbarrett.com/) in Maya. 
 
-![blender-tweenMachine](docs/tween_01.gif)
+# Features
+
+# Usage
+## Panel
+![blender-tweenMachine](docs/tween_panel.gif)
+## Menu
+![blender-tweenMachine](docs/tween_menu.gif)
+## Search operator (F3)
+![blender-tweenMachine](docs/tween_search_op.gif)
 
 # Installation
 
@@ -24,7 +32,3 @@
    and click on the button "Install Add-ons" on the bottom    
 6. Close and re-open Blender
 7. Go to Edit > Preference > Add-ons and enable "Tween Machine" add-ons
-   
-# To-Do
-- Adding abilities to tween specific properties
-  (location, rotation, scale and customs properties)
