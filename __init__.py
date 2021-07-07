@@ -118,7 +118,7 @@ class ANIM_OT_tween_90(bpy.types.Operator):
 
 class VIEW_3D_PT_tweenMachine(bpy.types.Panel):
     """Creates a Panel in the Object properties window"""
-    bl_category = "Tween Machine"
+    bl_category = "Item"
     bl_label = "Tween Machine"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
