@@ -4,6 +4,10 @@
  from [Justin Barrett](http://www.justinsbarrett.com/) in Maya. 
 
 # Features
+- Tween transforms and customs properties of Pose Bones (like the hotkey CTRL+E), Objects 
+  and subtypes like (Mesh, Lights, Camera, etc...)
+  
+- Insert Key automatically on channels who already have a fCurve.
 
 # Usage
 ## Panel
@@ -32,3 +36,6 @@
    and click on the button "Install Add-ons" on the bottom    
 6. Close and re-open Blender
 7. Go to Edit > Preference > Add-ons and enable "Tween Machine" add-ons
+
+# To-Do
+- Detect customs properties on the Armature

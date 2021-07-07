@@ -1,7 +1,7 @@
 bl_info = {
     "name": "Tween Machine",
     "author": "Fabien Collet",
-    "version": (0, 1, 0),
+    "version": (0, 2, 0),
     "blender": (2, 90, 0),
     "location": "Object > Animation > Tween Machine",
     "description": "Insert Breakdown Keyframes",

@@ -39,18 +39,7 @@ def resolveProperty(obj, data_path):
     return prop, path_attr
 
 
-def setValue(obj, path, value):
-    # resolve property path
-    prop, path_attr = resolveProperty(obj, path)
-
-    # Set value
-    if len(value) == 1:
-        setattr(prop, path_attr, value[0])
-    else:
-        setattr(prop, path_attr, value)
-
-
-def getClosestKeyFrame(obj, current_frame, list_bones=""):
+def getClosestKeyFrame(obj, current_frame, list_bones=[]):
 
     dict_keyframes = {}
 
@@ -165,21 +154,38 @@ def insertKeyframe(dict_objects, mix):
                 if not t_custom:
                     continue
 
-            for index in dict_objects[obj][data]:
-                # Calculate the new value
-                v_before = dict_objects[obj][data][index]["v_before"]
-                v_after = dict_objects[obj][data][index]["v_after"]
+            print(dict_objects)
 
-                v_distance = v_after - v_before
-                v_mix = v_before + (v_distance * mix)
+            # Resolve the property
+            object_to_resolve, attr_to_resolve = resolveProperty(obj, data)
+            property_resolved = object_to_resolve.path_resolve(attr_to_resolve)
+            if not isinstance(property_resolved, (int, float, str)):
+                property_length = len(property_resolved)
+            else:
+                property_length = 1
+
+            for i in range(property_length):
+
+                if i not in dict_objects[obj][data]:
+                    continue
+                else:
+                    # Calculate the new value
+                    v_before = dict_objects[obj][data][i]["v_before"]
+                    v_after = dict_objects[obj][data][i]["v_after"]
+
+                    v_distance = v_after - v_before
+                    v_mix = v_before + (v_distance * mix)
 
                 list_data.append(v_mix)
 
-            # Set New Data
-            setValue(obj, data, list_data)
-
-            # Insert Keyframe
-            obj.keyframe_insert(data_path=data)
+                # Set New Data and insert Keyframe
+                if property_length == 1:
+                    # property_resolved = v_mix
+                    setattr(object_to_resolve, attr_to_resolve, v_mix)
+                    obj.keyframe_insert(data_path=data)
+                else:
+                    property_resolved[i] = v_mix
+                    obj.keyframe_insert(data_path=data, index=i)
 
 
 def tweenMachine(scene, context):
@@ -226,12 +232,23 @@ def tween(scene, context, mix):
         # Find the closest keyframes (one before and one after)
         # if not found copy values of the closest
         # Store keyframes values of previous and next keyframe found
+        closest_key = None
+        object_to_add = None
+
         if context.mode == "POSE":
-            dict_objects[armature] = getClosestKeyFrame(armature,
-                                                        current_frame,
-                                                        objects)
+            closest_key = getClosestKeyFrame(armature,
+                                             current_frame,
+                                             objects)
+            object_to_add = armature
+
         else:
-            dict_objects[obj] = getClosestKeyFrame(obj, current_frame)
+            closest_key = getClosestKeyFrame(obj, current_frame)
+            object_to_add = obj
+
+        if not closest_key:
+            continue
+
+        dict_objects[object_to_add] = closest_key
 
     # Insert a keyframe at the current frame
     # based on a mix(%) of the previous and the next keyframe value
