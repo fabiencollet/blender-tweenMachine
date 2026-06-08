@@ -236,7 +236,7 @@ def tween(scene: bpy.types.Scene, context: bpy.types.Context, mix: float):
     elif context.mode == "OBJECT":
         object_list = []
         # List selected object_list
-        selected_objects_list = list(context.selected_objects_list)
+        selected_objects_list = list(context.selected_objects)
         for object in selected_objects_list:
             # Get subtype object(Mesh, Light, Camera, etc...)
             obj_subtype = object.data
